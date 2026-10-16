@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Organiser - Hand Hygiene Challenge</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;background:linear-gradient(180deg,#06235e,#0a4aa8 60%,#0a86d9);background-attachment:fixed;min-height:100vh}
+[hidden]{display:none!important}main{max-width:900px;margin:auto;padding:16px}h1{margin:6px 0 14px;font-size:26px}
+input,button{font:700 16px inherit;font-family:inherit;border-radius:14px;border:2px solid #ffffff66;background:#ffffff26;color:#fff;padding:12px 14px}input{width:100%;margin-bottom:10px}button{cursor:pointer}button.on{background:#ff4a0a;border-color:#ff4a0a}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.st{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.st div{background:#ffffff26;border-radius:14px;padding:12px;text-align:center}.st b{display:block;font-size:26px}
+.row{display:flex;align-items:center;gap:12px;background:#ffffff26;border-radius:14px;padding:10px 14px;margin-bottom:8px}.rk{width:44px;font-size:24px;font-weight:800;text-align:center}.row>div{flex:1;min-width:0}small{display:block;color:#ffffffc0}.pt{font-size:22px;color:#bfe6ff}
+.big .row{padding:16px 20px}.big .rk{font-size:36px}.big .row b{font-size:22px}.big .pt{font-size:32px}.big main{max-width:1100px}.big h1{font-size:38px}
+.pod{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:14px 0}.pod div{background:#ffffff26;border-radius:14px 14px 0 0;padding:10px;text-align:center;width:30%}.pod b{display:block}
+.err{color:#ffd0b0;min-height:20px}
+</style></head><body><main>
+<h1>Organiser dashboard</h1>
+<section id="lg"><p>Enter the organiser passcode.</p><input id="k" type="password" placeholder="Passcode" autocomplete="off"><button onclick="login()">Open</button><p class="err" id="er"></p></section>
+<section id="dv" hidden>
+<div class="st" id="st"></div>
+<div class="bar"><button id="b0" class="on" onclick="tab('staff')">Staff</button><button id="b1" onclick="tab('depts')">Departments</button><button id="b2" onclick="tab('guests')">Guests</button><button id="bb" onclick="toggleBig()">Big screen</button><button onclick="load()">Refresh</button></div>
+<input id="q" placeholder="Search name or department" oninput="draw()">
+<div class="pod" id="pod"></div><div id="ls"></div><p><small id="up"></small></p></section>
+</main>
+<script>
+const API="https://script.google.com/macros/s/AKfycbx11nLabbLBmH3HkjAQpYRpHPZwMktV3DI-SK-v9sQSpTE6rFn2CFVAwtCjSe5v1pGP/exec";let D=null,T="staff",K=sessionStorage.getItem("ok")||"",big=false;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const mm=s=>String(s/60|0).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+async function login(){K=document.getElementById("k").value;await load(true)}
+async function load(first){try{const r=await(await fetch(API+"?"+new URLSearchParams({a:"board",key:K}))).json();
+ if(r.error){document.getElementById("er").textContent=r.error=="denied"?"Wrong passcode.":r.error;if(!first){document.getElementById("lg").hidden=false;document.getElementById("dv").hidden=true}return}
+ sessionStorage.setItem("ok",K);D=r;document.getElementById("lg").hidden=true;document.getElementById("dv").hidden=false;document.getElementById("up").textContent="Updated "+new Date().toLocaleTimeString();draw()}
+ catch(e){document.getElementById("er").textContent="Cannot reach the server."}}
+function tab(x){T=x;["staff","depts","guests"].forEach((k,i)=>document.getElementById("b"+i).className=k==x?"on":"");draw()}
+function toggleBig(){big=!big;document.body.classList.toggle("big",big);document.getElementById("bb").className=big?"on":""}
+function draw(){if(!D)return;const s=D.stats||{};document.getElementById("st").innerHTML=[["Players",s.players],["Attempts",s.attempts],["Perfect runs",s.perfects],["Average points",s.avg]].map(x=>"<div><b>"+(x[1]||0)+"</b>"+x[0]+"</div>").join("");
+ const q=document.getElementById("q").value.toLowerCase(),m=["🥇","🥈","🥉"];let list=(D[T]||[]).filter(x=>!q||((x.n||"")+" "+(x.d||"")).toLowerCase().includes(q));
+ document.getElementById("pod").innerHTML=T!="depts"&&!q?list.slice(0,3).map((x,i)=>"<div style='height:"+(150-i*25)+"px'><span style='font-size:34px'>"+m[i]+"</span><b>"+esc(x.n)+"</b><small>"+x.p+" pts</small></div>").join(""):"";
+ document.getElementById("ls").innerHTML=list.map((x,i)=>T=="depts"?"<div class=row><span class=rk>"+(m[i]||i+1)+"</span><div><b>"+esc(x.d)+"</b><small>"+x.players+(x.total?" of "+x.total:"")+" played"+(x.total?" ("+Math.round(x.players/x.total*100)+"%)":"")+"</small></div><b class=pt>"+x.avg+"</b></div>":"<div class=row><span class=rk>"+(m[i]||i+1)+"</span><div><b>"+esc(x.n)+"</b><small>"+esc(x.d)+" · "+mm(x.s)+" · "+x.c+"/12</small></div><b class=pt>"+x.p+"</b></div>").join("")||"<p>No scores yet.</p>"}
+setInterval(()=>{if(K&&D)load()},30000);if(K)load(true);
+</script></body></html>

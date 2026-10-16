@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06235e">
+<title>Hand Hygiene Challenge</title>
+<style>
+:root{--s:#0a9bff;--o:#ff4a0a;--g:#22c55e;--r:#ef4444;--w:#38bdf8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari",sans-serif;color:#fff;min-height:100vh;background:linear-gradient(180deg,#06235e,#0a4aa8 50%,#0a86d9);background-attachment:fixed;overflow-x:hidden}
+[hidden]{display:none!important}
+body.red{animation:red .45s 4}@keyframes red{50%{box-shadow:inset 0 0 0 100vmax #ef444488}}
+#wv{position:fixed;left:0;right:0;bottom:0;height:90px;overflow:hidden;pointer-events:none;z-index:0}
+#wv i{position:absolute;left:0;bottom:0;width:200%;height:70px;background:radial-gradient(ellipse at 50% 100%,#38bdf855 45%,transparent 46%) 0 0/140px 70px repeat-x;animation:wv 7s linear infinite}
+#wv i+i{height:50px;opacity:.7;animation-duration:11s;animation-direction:reverse}@keyframes wv{to{transform:translateX(-140px)}}
+.bb{position:fixed;bottom:-30px;border-radius:50%;border:2px solid #ffffff66;pointer-events:none;z-index:0;animation:rise linear infinite}@keyframes rise{to{transform:translateY(-110vh)}}
+header,main,#bar{position:relative;z-index:2}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top))}
+header b{font-size:14px;opacity:.9}
+.tools button{border:1px solid #ffffff55;background:#ffffff26;color:#fff;border-radius:20px;padding:7px 13px;font-weight:700;font-size:14px;margin-left:6px}
+main{max-width:560px;margin:auto;padding:4px 14px 150px}
+.logo{display:block;margin:6px auto 14px;background:#fff;border-radius:24px;padding:12px 16px;width:200px;box-shadow:0 18px 44px #0006}.logo img{width:100%;display:block}
+h1{font-size:34px;line-height:1.1;margin:8px 0;font-weight:800}p.sub{margin:0 0 16px;color:#ffffffd0;line-height:1.45}
+label{font-weight:700;font-size:14px}
+input{width:100%;height:58px;margin:7px 0 14px;padding:0 16px;font:700 19px inherit;font-family:inherit;color:#fff;background:#ffffff26;border:2px solid #ffffff55;border-radius:16px}
+input:focus{outline:0;border-color:#fff;box-shadow:0 0 0 5px #ffffff33}input::placeholder{color:#ffffff90;font-weight:500}
+.btn{border:0;border-radius:28px;height:56px;padding:0 18px;font:800 17px inherit;font-family:inherit;color:#fff;background:linear-gradient(90deg,#ff4a0a,#ff7a1a);box-shadow:0 10px 26px #0005;flex:1}
+.btn:active{transform:scale(.97)}.btn.w{background:#ffffff1f;border:2px solid #ffffff99;box-shadow:none}.btn:disabled{opacity:.4}
+.link{background:none;border:0;color:#bfe6ff;font:700 15px inherit;font-family:inherit;text-decoration:underline;padding:14px 0;width:100%}
+.msg{color:#ffe0b5;font-size:14px;min-height:20px;margin:0 0 8px}
+.stat{display:flex;justify-content:space-between;align-items:center;gap:6px;margin:2px 0 8px;font-weight:800;font-size:13px}.chip{background:#ffffff26;border-radius:20px;padding:7px 11px;border:0;color:#fff;font:800 13px inherit;font-family:inherit}
+#bn{background:#ffffff26;border:1px solid #ffffff44;border-radius:16px;padding:12px;margin-bottom:10px;font-size:14px;line-height:1.4}
+#bn.bad{background:#7f1d1dcc;border-color:var(--r)}#bn.ok{background:#14532dcc;border-color:var(--g)}
+.pb{height:10px;background:#ffffff33;border-radius:6px;overflow:hidden;margin:8px 0}.pb i{display:block;height:100%;transition:width .6s}
+.tp{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:#d6f0ff;margin:0 2px 4px}
+#board{position:relative;margin:4px 0}
+#rt{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+#sl{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(6,minmax(0,1fr));gap:16px 34px;height:max(400px,calc(100svh - 330px))}
+.slot{position:relative;border-radius:14px;border:2px solid #ffffffaa;background:#06235ed9;overflow:hidden;cursor:pointer;display:grid;place-items:center;transition:border-color .3s,box-shadow .3s}
+.slot img{width:100%;height:100%;display:block;object-fit:cover}.slot .plus{font-size:26px;color:#ffffff88}
+.slot .cap{font-size:11px;text-align:center;padding:4px}
+.slot .n{position:absolute;left:4px;top:4px;width:24px;height:24px;border-radius:50%;background:var(--s);display:grid;place-items:center;font-weight:800;font-size:13px;z-index:3;box-shadow:0 0 0 2px #fff}
+.slot.ok{border-color:var(--g);box-shadow:0 0 14px #22c55e99}.slot.bad{border-color:var(--r);box-shadow:0 0 16px var(--r);background:#7f1d1d}
+.slot.sh{animation:sh .4s}@keyframes sh{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.slot.rip::after{content:"";position:absolute;inset:0;border-radius:14px;border:3px solid #fff;animation:rip .7s ease-out forwards;z-index:4}@keyframes rip{from{opacity:.9;transform:scale(.6)}to{opacity:0;transform:scale(1.25)}}
+.fl{stroke-dasharray:12 10;animation:fl 1s linear infinite}@keyframes fl{to{stroke-dashoffset:-22}}
+.gm{position:absolute;font-size:20px;z-index:5;animation:crawl 2s ease-in-out infinite alternate}@keyframes crawl{to{transform:translate(14px,-10px) rotate(40deg)}}
+#germs{position:fixed;inset:0;pointer-events:none;z-index:40;overflow:hidden}#germs span{position:absolute;font-size:26px;opacity:.85;animation:crawl 2.2s ease-in-out infinite alternate}
+.win{position:absolute;inset:-6px;z-index:6;background:#06143bf2;border:3px solid var(--g);border-radius:20px;display:flex;align-items:center;justify-content:center;text-align:center;padding:14px;animation:pop .6s}@keyframes pop{from{opacity:0;transform:scale(.7)}}
+.win img{width:55%;background:#fff;border-radius:18px;padding:8px}.win h2{color:#4ade80;margin:10px 0 4px;font-size:28px}
+#sh{position:fixed;inset:0;z-index:60}#shb{position:absolute;inset:0;background:#000a}
+#shc{position:absolute;left:0;right:0;bottom:0;max-width:600px;margin:auto;background:#0b3a85;border-radius:22px 22px 0 0;padding:14px 14px calc(14px + env(safe-area-inset-bottom));max-height:78vh;overflow:auto;animation:up .25s}@keyframes up{from{transform:translateY(100%)}}
+.shh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:17px}.shh button{background:#ffffff26;border:0;color:#fff;width:36px;height:36px;border-radius:50%;font-size:18px}
+#shg{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px;margin-bottom:10px}
+.tile{background:#ffffff26;border:2px solid #ffffff55;border-radius:10px;padding:3px;cursor:pointer}.tile.cur{border-color:var(--o)}.tile:active{transform:scale(.95)}
+.tile img{width:100%;display:block;border-radius:7px}.tile div{font-size:10.5px;line-height:1.2;text-align:center;padding:3px 0 1px}
+#bar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#06235eee;border-top:1px solid #ffffff33;display:flex;flex-direction:column;gap:8px;align-items:center}
+#bar>*{width:100%;max-width:560px}#ab{display:flex;gap:8px}
+#pl{display:flex;align-items:center;gap:10px;background:#ffffff26;border-radius:16px;padding:7px 12px}
+#pl .av{width:36px;height:36px;border-radius:50%;background:var(--s);display:grid;place-items:center;font-weight:800;flex:none}#pl b{display:block;font-size:15px}#pl small{color:#ffffffc8}
+#cf{position:fixed;inset:0;z-index:80;pointer-events:none}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head><body>
+<div id="wv"><i></i><i></i></div>
+<header><b>Marengo Asia Hospitals</b><div class="tools"><button id="mt" onclick="toggleMute()">🔊</button><button id="lg" onclick="toggleLang()">हिंदी</button></div></header>
+<main>
+<section id="s0"><div class="logo"><img id="lo" alt="Marengo Asia Hospitals"></div>
+<h1 data-t="title"></h1><p class="sub" data-t="sub"></p>
+<label for="eid" data-t="id"></label><input id="eid" autocomplete="off" autocapitalize="characters" placeholder="e.g. 10234">
+<button class="btn" style="width:100%" onclick="start()" data-t="play"></button>
+<button class="link" onclick="S.pend=null;$('rnote').textContent='';show('s1')" data-t="reg"></button></section>
+<section id="s1" hidden><h1 data-t="rn"></h1><p class="msg" id="rnote"></p>
+<label for="rm" data-t="mob"></label><input id="rm" inputmode="numeric" maxlength="10" placeholder="10 digit number" onchange="mobBlur()">
+<label for="rn" data-t="name"></label><input id="rn" autocomplete="off">
+<label for="rd" data-t="dept"></label><input id="rd" list="dl" autocomplete="off"><datalist id="dl"></datalist>
+<div style="display:flex;gap:8px;margin-top:6px"><button class="btn w" style="flex:0 0 100px" onclick="show('s0')" data-t="back"></button><button class="btn" onclick="regGo()" data-t="go"></button></div></section>
+<section id="s2" hidden>
+<div class="stat"><span class="chip">⏱ <span id="tm">00:00</span></span><span class="chip"><span data-t="att"></span> <span id="an">1</span></span><span class="chip">💧 <span id="fc">0</span>/12</span><button class="chip" id="fb" onclick="S.fast=!S.fast;fbl()"></button></div>
+<div id="bn" hidden></div>
+<div class="tp"><span>🚰 <span data-t="tap"></span></span></div>
+<div id="board"><svg id="rt"></svg><div id="sl"></div></div>
+<div class="tp"><span>🙌 <span data-t="end"></span></span></div>
+<div id="germs"></div></section>
+</main>
+<div id="sh" hidden><div id="shb" onclick="closeSh()"></div><div id="shc"><div class="shh"><b id="sht"></b><button onclick="closeSh()">✕</button></div><div id="shg"></div><button class="btn w" id="shx" style="width:100%" onclick="clr()" hidden data-t="clr"></button></div></div>
+<div id="bar" hidden><div id="ab"></div><div id="pl"><div class="av" id="av"></div><div><b id="pn"></b><small id="pi"></small></div></div></div>
+<canvas id="cf" hidden></canvas>
+<script>
+const CFG={api:"https://script.google.com/macros/s/AKfycbx11nLabbLBmH3HkjAQpYRpHPZwMktV3DI-SK-v9sQSpTE6rFn2CFVAwtCjSe5v1pGP/exec",logo:"logo.webp",ver:"3.0"};
+const ST=[["Wet hands","हाथ गीले करें"],["Apply soap","साबुन लगाएँ"],["Rub palms","हथेलियाँ रगड़ें"],["Back of hands","हाथ का पिछला भाग"],["Fingers interlaced","उंगलियाँ फँसाएँ"],["Back of fingers","उंगलियों के पीछे"],["Rub thumbs","अंगूठे रगड़ें"],["Fingertips","उंगलियों के सिरे"],["Rinse","पानी से धोएँ"],["Dry hands","हाथ सुखाएँ"],["Close tap","नल बंद करें"],["Hands safe","हाथ सुरक्षित"]];
+const T={en:{title:"Hand Hygiene Challenge",sub:"Place the 12 handwash steps in the right order. Wrong order lets the germs in!",id:"Employee ID",play:"Play Game",reg:"No ID? Register here",rn:"Register to play",name:"Your name",dept:"Department / group",mob:"Mobile number",go:"Start",noid:"ID not found. Please fill your details to play.",fill:"Please fill all fields.",badmob:"Enter a 10 digit mobile number.",att:"Attempt",drag:"Drag each picture into its numbered box",check:"Check answer",ans:"Show correct order",again:"Play again",lb:"Leaderboard",back:"Back",clean:"Clean the germs",ok:"correct",pts:"points",cong:"Congratulations!",good:"Perfect! Clean hands save lives. Wash your hands at every moment that matters, every day.",risk:"Infection risk",r0:"Low",r1:"Medium",r2:"High",bad:"Wrong order! If the handwash steps are not done correctly, germs stay on your hands and the chance of infection rises.",fixing:"Drag the right pictures into the red boxes to wipe the germs away.",done:"Germs cleared! Now you know the right order. Keep washing your hands regularly.",saving:"Saving…",saved:"Saved ✔",retry:"Not saved yet. Will retry automatically.",staff:"Staff",deps:"Departments",guests:"Guests",empty:"No scores yet.",players:"played",off:"Cannot reach the server."},
+hi:{title:"हैंड हाइजीन चैलेंज",sub:"हाथ धोने के 12 स्टेप सही क्रम में लगाएँ। गलत क्रम से कीटाणु आ जाते हैं!",id:"कर्मचारी ID",play:"गेम शुरू करें",reg:"ID नहीं है? यहाँ रजिस्टर करें",rn:"खेलने के लिए रजिस्टर करें",name:"आपका नाम",dept:"विभाग / समूह",mob:"मोबाइल नंबर",go:"शुरू करें",noid:"ID नहीं मिली। खेलने के लिए अपनी जानकारी भरें।",fill:"कृपया सभी जानकारी भरें।",badmob:"10 अंकों का मोबाइल नंबर डालें।",att:"प्रयास",drag:"हर चित्र को उसके नंबर वाले बॉक्स में खींचें",check:"उत्तर जाँचें",ans:"सही क्रम देखें",again:"फिर खेलें",lb:"लीडरबोर्ड",back:"वापस",clean:"कीटाणु साफ़ करें",ok:"सही",pts:"पॉइंट",cong:"बधाई हो!",good:"शानदार! साफ़ हाथ जीवन बचाते हैं। हर ज़रूरी मौके पर, हर दिन हाथ धोएँ।",risk:"संक्रमण का खतरा",r0:"कम",r1:"मध्यम",r2:"ज़्यादा",bad:"गलत क्रम! अगर हाथ धोने के स्टेप सही नहीं होंगे तो कीटाणु हाथों पर रह जाते हैं और संक्रमण का खतरा बढ़ता है।",fixing:"सही चित्रों को लाल बॉक्स में खींचें और कीटाणु साफ़ करें।",done:"कीटाणु साफ़! अब आप सही क्रम जानते हैं। नियमित रूप से हाथ धोते रहें।",saving:"सेव हो रहा है…",saved:"सेव हो गया ✔",retry:"अभी सेव नहीं हुआ। अपने आप दोबारा कोशिश होगी।",staff:"स्टाफ",deps:"विभाग",guests:"अतिथि",empty:"अभी कोई स्कोर नहीं।",players:"खेले",off:"सर्वर से संपर्क नहीं हुआ।"}};
+Object.assign(T.en,{tap:"Tap a box, then choose its step",end:"Clean hands",pick:"Which step is number",clr:"Clear this box",fast:"⚡ Fast on",slow:"⚡ Fast off",best:"Your best"});
+Object.assign(T.hi,{tap:"बॉक्स पर टैप करें और उसका स्टेप चुनें",end:"साफ़ हाथ",pick:"नंबर कौन सा स्टेप है",clr:"यह बॉक्स खाली करें",fast:"⚡ तेज़ चालू",slow:"⚡ तेज़ बंद",best:"आपका बेस्ट"});
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ls={g(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let L=ls.g("hl")||"en";const t=k=>T[L][k]||T.en[k]||k;
+const S={slots:Array(12).fill(null),lock:new Set(),wrong:[],attempt:1,mute:false,fast:true,best:0};
+const mmss=s=>String(s/60|0).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+const cap=id=>ST[id][L=="hi"?1:0];
+function fbl(){$("fb").textContent=t(S.fast?"fast":"slow")}
+function applyLang(){document.documentElement.lang=L;document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));$("lg").textContent=L=="en"?"हिंदी":"English";fbl();
+ if(!$("s2").hidden){render();if(S.res)banner()}}
+function toggleLang(){L=L=="en"?"hi":"en";ls.s("hl",L);applyLang()}
+function toggleMute(){S.mute=!S.mute;$("mt").textContent=S.mute?"🔇":"🔊"}
+function show(id){["s0","s1","s2"].forEach(x=>$(x).hidden=x!=id);$("bar").hidden=id!="s2";scrollTo(0,0)}
+async function api(p){const r=await fetch(CFG.api+"?"+new URLSearchParams(p));return r.json()}
+let ac;function tone(f,d=.1,ty="sine"){if(S.mute)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(.15,ac.currentTime);g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+function plop(){tone(420,.07);setTimeout(()=>tone(300,.09),60)}
+function vib(p){try{navigator.vibrate&&navigator.vibrate(p)}catch(e){}}
+function confetti(n){const c=$("cf"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;c.hidden=false;const cols=["#38bdf8","#0a9bff","#ff4a0a","#22c55e","#facc15"];
+ const P=Array.from({length:n},()=>({x:Math.random()*c.width,y:-Math.random()*c.height*.6,r:4+Math.random()*5,vy:2+Math.random()*4,vx:-2+Math.random()*4,a:Math.random()*6,k:cols[Math.random()*5|0]}));let f=0;
+ (function a(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=.1;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.k;x.fillRect(-p.r,-p.r/2,p.r*2,p.r);x.restore()});if(++f<240)requestAnimationFrame(a);else c.hidden=true})()}
+$("lo").src=CFG.logo;
+for(let i=0;i<8;i++){const b=document.createElement("span");b.className="bb";const z=8+Math.random()*16;b.style.cssText="left:"+Math.random()*96+"%;width:"+z+"px;height:"+z+"px;animation-duration:"+(9+Math.random()*10)+"s;animation-delay:-"+Math.random()*12+"s";document.body.append(b)}
+/* login */
+async function who(k){try{return await api({a:"who",id:k})}catch(e){return null}}
+async function start(){const id=$("eid").value.trim().toUpperCase();if(!id){alert(t("fill"));return}
+ const r=await who(id);if(r&&r.found)return begin({key:id,id,name:r.name,dept:r.dept,type:r.type||"Staff"},r.attempts||0,r.best);
+ S.pend=id;$("rnote").textContent=t("noid");show("s1")}
+async function mobBlur(){const m=$("rm").value.replace(/\D/g,"");if(m.length!=10)return;const r=await who("M"+m);if(r&&r.found){$("rn").value=r.name;$("rd").value=r.dept}}
+async function regGo(){const n=$("rn").value.trim(),d=$("rd").value.trim(),m=$("rm").value.replace(/\D/g,"");
+ if(!n||!d){alert(t("fill"));return}if(m.length!=10){alert(t("badmob"));return}
+ const key=S.pend||"M"+m,r=await who(key);begin({key,id:S.pend||"",name:n,dept:d,type:S.pend?"Unverified":"Guest",mobile:m},r&&r.attempts||0,r&&r.best)}
+function begin(e,prev,best){S.emp=e;S.attempt=prev+1;S.best=best||0;$("av").textContent=e.name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase();$("pn").textContent=e.name;$("pi").textContent=(e.id?"ID "+e.id:"Guest")+" · "+e.dept;show("s2");newRound()}
+(async()=>{try{const r=await api({a:"init"});$("dl").innerHTML=(r.departments||[]).map(d=>"<option value='"+esc(d)+"'>").join("")}catch(e){}})();
+/* game */
+function newRound(){S.slots=Array(12).fill(null);S.lock=new Set();S.wrong=[];S.fix=false;S.done=false;S.won=false;S.finished=false;S.res=null;$("germs").innerHTML="";$("bn").hidden=true;$("an").textContent=S.attempt;S.t0=Date.now();
+ clearInterval(S.tm);S.tm=setInterval(()=>{if(!S.done)$("tm").textContent=mmss((Date.now()-S.t0)/1000|0)},500);$("tm").textContent="00:00";render()}
+const pos=i=>{const r=i>>1;return[r,r%2?1-i%2:i%2]};
+function im(id){return"<img src='img/s"+id+".webp' alt='' onerror='imgErr(this,"+id+")'>"}
+function imgErr(e,id){if(!e.dataset.f){e.dataset.f=1;e.src="s"+id+".webp"}else e.outerHTML="<span class=cap>"+cap(id)+"</span>"}
+function render(){let h="";
+ for(let i=0;i<12;i++){const[r,c]=pos(i),id=S.slots[i],bad=S.wrong.includes(i);
+  h+="<div class='slot"+(S.lock.has(i)&&S.done?" ok":"")+(bad?" bad":"")+"' data-i="+i+" style='grid-row:"+(r+1)+";grid-column:"+(c+1)+"'><b class=n>"+i+"</b>"+(id!=null?im(id):"<span class=plus>+</span>")+(bad?"<span class=gm style='left:8%;top:30%'>🦠</span><span class=gm style='left:48%;top:12%;animation-delay:-.7s'>🦠</span><span class=gm style='left:66%;top:52%;animation-delay:-1.3s'>🦠</span>":"")+"</div>"}
+ $("sl").innerHTML=h;$("fc").textContent=S.slots.filter(v=>v!=null).length;
+ const b=$("board");b.querySelectorAll(".win").forEach(e=>e.remove());
+ if(S.won){const w=document.createElement("div");w.className="win";w.innerHTML="<div><img src='"+CFG.logo+"' alt=''><h2>"+t("cong")+"</h2><b>"+esc(S.emp.name)+"</b><p>12/12 · "+S.res.p+" "+t("pts")+" · "+mmss(S.res.secs)+"</p></div>";b.append(w)}
+ route();bar()}
+function route(){const sl=$("sl"),el=i=>sl.querySelector(".slot[data-i='"+i+"']");let h="";
+ const pt=i=>{const e=el(i);return e?[e.offsetLeft+e.offsetWidth/2,e.offsetTop+e.offsetHeight/2]:null};
+ for(let i=0;i<11;i++){const a=pt(i),b=pt(i+1);if(!a||!b)continue;const d="M"+a[0]+" "+a[1]+"L"+b[0]+" "+b[1];
+  const both=S.slots[i]!=null&&S.slots[i+1]!=null,bad=S.done&&(S.wrong.includes(i)||S.wrong.includes(i+1)),good=S.done&&!S.wrong.length;
+  h+="<path d='"+d+"' stroke='#ffffff30' stroke-width='18' stroke-linecap='round' fill='none'/>";
+  if(both||bad)h+="<path class='"+(bad?"":"fl")+"' d='"+d+"' stroke='"+(bad?"#ef4444":good?"#7dd3fc":"#38bdf8")+"' stroke-width='9' stroke-linecap='round' fill='none'/>"}
+ $("rt").innerHTML=h}
+addEventListener("resize",route);
+function shake(i){const e=document.querySelector(".slot[data-i='"+i+"']");if(e){e.classList.add("sh");setTimeout(()=>e.classList.remove("sh"),400)}}
+$("sl").addEventListener("click",e=>{const s=e.target.closest(".slot");if(s)openSh(+s.dataset.i)});
+function openSh(i){if(S.done&&!S.fix||S.lock.has(i)||S.fix&&!S.wrong.includes(i))return;S.cur=i;
+ const cur=S.slots[i],pend=[...Array(12).keys()].filter(k=>!S.slots.includes(k));
+ $("sht").textContent=t("pick")+" "+i+"?";
+ $("shg").innerHTML=(cur!=null?[cur]:[]).concat(pend).map(id=>"<div class='tile"+(id===cur?" cur":"")+"' onclick='pick("+id+")'>"+im(id)+"<div>"+cap(id)+"</div></div>").join("");
+ $("shx").hidden=cur==null||S.fix;$("sh").hidden=false;tone(520,.05)}
+function closeSh(){$("sh").hidden=true}
+function clr(){S.slots[S.cur]=null;closeSh();render()}
+function ripple(i){const e=document.querySelector(".slot[data-i='"+i+"']");if(e)e.classList.add("rip")}
+function pick(id){const i=S.cur;closeSh();
+ if(S.fix){if(id==i){S.slots[i]=id;S.lock.add(i);S.wrong=S.wrong.filter(x=>x!=i);tone(880,.15,"triangle");vib(30);render();ripple(i);if(!S.wrong.length)fixed()}else{shake(i);tone(170,.2,"sawtooth");vib(80)}return}
+ S.slots[i]=id;plop();vib(15);render();ripple(i);
+ if(S.fast){const n=[...Array(12).keys()].map(k=>(i+1+k)%12).find(k=>S.slots[k]==null);if(n!=null)setTimeout(()=>openSh(n),380)}}
+function check(){if(S.done||S.slots.includes(null))return;S.done=true;clearInterval(S.tm);
+ const secs=(Date.now()-S.t0)/1000|0,c=S.slots.filter((v,i)=>v==i).length,perfect=c==12,bonus=perfect?Math.max(0,60-(secs/5|0)):0;S.res={c,p:c*10+bonus,secs,perfect};
+ S.wrong=[];S.slots.forEach((v,i)=>{if(v==i)S.lock.add(i);else S.wrong.push(i)});
+ if(perfect){S.won=true;[523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>tone(f,.3,"triangle"),i*150));confetti(170)}else alarm();
+ render();banner();scrollTo(0,0);save()}
+function alarm(){document.body.classList.add("red");setTimeout(()=>document.body.classList.remove("red"),1900);vib([200,100,200,100,300]);tone(200,.4,"sawtooth");setTimeout(()=>tone(150,.5,"sawtooth"),350);
+ const g=$("germs");g.innerHTML="";for(let i=0;i<Math.min(34,S.wrong.length*7);i++){const s=document.createElement("span");s.textContent="🦠";s.style.cssText="left:"+Math.random()*92+"%;top:"+Math.random()*92+"%;animation-delay:-"+Math.random()*2+"s";g.append(s)}}
+function banner(){const r=S.res,w=S.wrong.length,lv=w==0?0:w<4?1:2,b=$("bn");b.hidden=false;b.className=r.perfect||S.finished?"ok":"bad";
+ const msg=r.perfect?t("good"):S.fix?t("fixing"):S.finished?t("done"):t("bad");
+ b.innerHTML="<b>"+r.c+"/12 "+t("ok")+" · "+r.p+" "+t("pts")+" · "+mmss(r.secs)+"</b><div>"+t("best")+": "+Math.max(S.best,r.p)+"</div>"+(r.perfect?"":"<div class=pb><i style='width:"+[15,55,100][lv]+"%;background:"+["#22c55e","#facc15","#ef4444"][lv]+"'></i></div><b>"+t("risk")+": "+t("r"+lv)+"</b>")+"<div style='margin-top:6px'>"+msg+"</div><div class=msg id=sv style='margin:6px 0 0'></div>"}
+function startFix(){S.fix=true;S.wrong.forEach(i=>S.slots[i]=null);render();banner()}
+function fixed(){S.fix=false;S.finished=true;$("germs").innerHTML="";confetti(90);[523,784,1047].forEach((f,i)=>setTimeout(()=>tone(f,.25,"triangle"),i*140));render();banner();post({a:"fix",uid:S.uid})}
+function showAns(){S.slots=[...Array(12).keys()];S.lock=new Set(S.slots);S.wrong=[];S.fix=false;S.finished=true;$("germs").innerHTML="";render();banner()}
+function again(){S.attempt++;newRound()}
+function bar(){const a=$("ab"),end=S.won||S.finished;
+ a.innerHTML=!S.done?"<button class='btn' onclick='check()' "+(S.slots.includes(null)?"disabled":"")+">✔ "+t("check")+"</button>":end?"<button class='btn' onclick='again()'>🔄 "+t("again")+"</button>":S.fix?"":"<button class='btn' onclick='startFix()'>🧼 "+t("clean")+"</button><button class='btn w' onclick='showAns()'>"+t("ans")+"</button>"}
+/* saving */
+async function post(d){try{const r=await fetch(CFG.api,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(d)});const j=await r.json();if(j.ok){if(j.attempt)S.attempt=j.attempt;return true}}catch(e){}return false}
+async function save(){const r=S.res,e=S.emp;S.uid=Date.now()+"-"+Math.random().toString(36).slice(2,8);
+ const d={a:"save",uid:S.uid,id:e.key,name:e.name,dept:e.dept,type:e.type,mobile:e.mobile||"",correct:r.c,points:r.p,secs:r.secs,lang:L,ver:CFG.ver},s=$("sv");if(s)s.textContent=t("saving");
+ const ok=await post(d),s2=$("sv");if(ok){if(s2)s2.textContent=t("saved");flush();S.best=Math.max(S.best,r.p)}else{const p=ls.g("pend")||[];p.push(d);ls.s("pend",p);if(s2)s2.textContent=t("retry")}}
+async function flush(){const p=ls.g("pend")||[];if(!p.length)return;const k=[];for(const d of p)if(!(await post(d)))k.push(d);ls.s("pend",k)}
+applyLang();flush();show("s0");
+</script></body></html>
