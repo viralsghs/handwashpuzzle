@@ -202,4 +202,19 @@ function bgStart(){if(bgR||matchMedia("(prefers-reduced-motion:reduce)").matches
 function bgStop(){bgR=0;$("bg").hidden=$("rays").hidden=true}
 addEventListener("resize",()=>{const c=$("bg");c.width=innerWidth;c.height=innerHeight});
 applyLang();flush();show("s0");
-</script></body></html>
+</script>
+<script>
+// disable right click, long-press menu and common inspect shortcuts
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("dragstart", e => e.preventDefault());
+document.addEventListener("keydown", e => {
+  const k = e.key.toLowerCase();
+  if (e.key === "F12" ||
+      (e.ctrlKey && ["u", "s", "p"].includes(k)) ||
+      (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(k)) ||
+      (e.metaKey && e.altKey && ["i", "j", "u"].includes(k))) {
+    e.preventDefault();
+  }
+});
+</script>
+</body></html>
